@@ -25,6 +25,6 @@
 
     <!-- Front End MetaData -->
     <em:name>Disable TLS Certificate Transparency</em:name>
-    <em:description>Disables TLS Certificat Transparency default in 52.* - see bug 1293231.</em:description>
+    <em:description>Disables TLS Certificate Transparency default in 52.* (see bug 1293231)</em:description>
   </Description>
 </RDF>
