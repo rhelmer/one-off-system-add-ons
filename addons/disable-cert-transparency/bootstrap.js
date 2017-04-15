@@ -15,7 +15,7 @@ function install() {}
 function uninstall() {}
 
 function startup() {
-  let defaults = new Preferences({defaultBranch: 1});
+  let defaults = new Preferences({defaultBranch: true});
   defaults.set("security.pki.certificate_transparency.mode", 0);
 }
 
