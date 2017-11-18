@@ -26,7 +26,7 @@ function startup() {
 
         if (vendorID == BAD_VENDOR_ID) {
             let defaultBranch = Services.prefs.getDefaultBranch("");
-            defaultBranch.setBoolPref("media.wmf.use-nv12-format", false);
+            defaultBranch.setBoolPref("media.windows-media-foundation.use-nv12-format", false);
         }
     }
 }
