@@ -8,9 +8,10 @@ Cu.importGlobalProperties(["crypto", "TextEncoder"]);
 const ENABLE_PROB = 0.1;
 const DEBUG = false;
 const VERSION_MAX_PREF = "security.tls.version.max";
+const ADDON_ID = "tls13-rollout-bug1442042@mozilla.org";
 
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "crash" }] */
-var crash = class extends ExtensionAPI {
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "rollout" }] */
+var rollout = class extends ExtensionAPI {
   getAPI() {
     return {
       experiments: {
@@ -29,7 +30,7 @@ var crash = class extends ExtensionAPI {
             return view.getUint32(0) / 0xffffffff;
           },
              
-          async startup(data, reason) {
+          async startup() {
             // Don't do anything if the user has already messed with this
             // setting.
             if (Services.prefs.prefHasUserValue(VERSION_MAX_PREF)) {
@@ -40,7 +41,7 @@ var crash = class extends ExtensionAPI {
             this.debug("Installing");
              
             let clientID = ClientID.getClientID();
-            let variate = await this.generateVariate(clientID, data.id);
+            let variate = await this.generateVariate(clientID, ADDON_ID);
             this.debug(variate);
             let prefs = Services.prefs.getDefaultBranch("");
              
