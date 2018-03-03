@@ -33,19 +33,19 @@ var crash = class extends ExtensionAPI {
             // Don't do anything if the user has already messed with this
             // setting.
             if (Services.prefs.prefHasUserValue(VERSION_MAX_PREF)) {
-              debug("User has changed TLS max version. Skipping");
+              this.debug("User has changed TLS max version. Skipping");
               return;
             }
              
-            debug("Installing");
+            this.debug("Installing");
              
             let clientID = ClientID.getClientID();
-            let variate = await generateVariate(clientID, data.id);
-            debug(variate);
+            let variate = await this.generateVariate(clientID, data.id);
+            this.debug(variate);
             let prefs = Services.prefs.getDefaultBranch("");
              
             if (variate < ENABLE_PROB) {
-              debug("Setting TLS 1.3 on");
+              this.debug("Setting TLS 1.3 on");
               prefs.setIntPref(VERSION_MAX_PREF, 4);
             }
           },
