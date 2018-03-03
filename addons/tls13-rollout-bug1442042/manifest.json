@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "TLS 1.3 gradual roll-out",
+  "description": "Gradually roll-out TLS 1.3",
+  "version": "1.0",
+
+  "applications": {
+    "gecko": {
+      "id": "tls13-rollout-bug1442042@mozilla.org"
+    }
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "experiment_apis": {
+    "rollout": {
+      "schema": "experiments/rollout/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "experiments/rollout/api.js",
+        "paths": [["experiments", "rollout"]]
+      }
+    }
+  }
+}

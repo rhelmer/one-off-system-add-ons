@@ -1,0 +1,15 @@
+[
+  {
+    "namespace": "experiments.rollout",
+    "description": "TLS 1.3 Roll-out",
+    "functions": [
+      {
+        "name": "startup",
+        "type": "function",
+        "description": "Slow roll-out of TLS 1.3",
+        "parameters": [],
+        "async": true
+      }
+    ]
+  }
+]
