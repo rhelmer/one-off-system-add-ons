@@ -16,7 +16,7 @@ Cu.importGlobalProperties(["crypto", "TextEncoder"]);
 // depending on server-side throttling, as throttling cannot account for any
 // other concurrent gradual roll-outs.
 const ENABLE_PROB = 0.01;
-const DEBUG = true;
+const DEBUG = false;
 const VERSION_MAX_PREF = "security.tls.version.max";
 
 function debug(msg) {
