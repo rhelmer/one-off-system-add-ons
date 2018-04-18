@@ -15,7 +15,7 @@ Cu.importGlobalProperties(["crypto", "TextEncoder"]);
 // initially roll out to 10%, we want to control this on the client rather than
 // depending on server-side throttling, as throttling cannot account for any
 // other concurrent gradual roll-outs.
-const ENABLE_PROB = 0.10;
+const ENABLE_PROB = 0.50;
 const DEBUG = false;
 const VERSION_FALLBACK_LIMIT_PREF = "security.tls.version.fallback-limit";
 
