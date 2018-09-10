@@ -4,12 +4,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-let {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+/* eslint-disable mozilla/no-define-cc-etc */
+let {Cu} = Components;
 
 /* eslint-disable mozilla/use-chromeutils-import */
-Cu.import("resource://gre/modules/AppConstants.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, "UpdateUtils",
+  "resource://gre/modules/UpdateUtils.jsm");
 
 Cu.importGlobalProperties(["crypto", "TextEncoder", "FormData", "fetch"]);
 
@@ -22,11 +26,12 @@ const OPT_OUT_PREF = "datareporting.healthreport.uploadEnabled";
 const TELEMETRY_ENABLED_PREF = "toolkit.telemetry.enabled";
 const REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
 
+/* eslint-disable no-console */
 function debug(msg, obj) {
   if (DEBUG) {
     console.log(`Telemetry measurement: ${msg}`); // eslint-disable-line no-console
     if (obj) {
-        console.log("Telemetry measurement JS object:", obj);
+      console.log("Telemetry measurement JS object:", obj);
     }
   }
 }
@@ -37,21 +42,21 @@ async function reportTelemetrySetting() {
 
   const payload = {
     "appVersion": Services.appinfo.version,
-    "appUpdateChannel": Services.appinfo.defaultUpdateChannel,
+    "appUpdateChannel": UpdateUtils.getUpdateChannel(false),
     "osName": Services.appinfo.OS,
     "osVersion": Services.sysinfo.getProperty("version"),
-    "telemetryEnabled": enabled | 0,
+    "telemetryEnabled": enabled | 0
   };
 
   let formData = new FormData();
-  formData.append('telemetry_enabled', payload);
+  formData.append("telemetry_enabled", payload);
 
   debug(`posting to endpoint ${REPORTING_ENDPOINT} with payload:`, payload);
 
   await fetch(REPORTING_ENDPOINT, {
-    method: 'PUT',
+    method: "PUT",
     body: formData
-  })
+  });
 }
 
 async function generateVariate(seed, label) {
@@ -61,6 +66,7 @@ async function generateVariate(seed, label) {
   return view.getUint32(0) / 0xffffffff;
 }
 
+/* eslint-disable no-unused-vars */
 async function install(data, reason) {
   debug("Installing");
 
