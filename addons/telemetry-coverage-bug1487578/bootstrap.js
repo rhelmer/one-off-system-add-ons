@@ -22,8 +22,8 @@ Cu.importGlobalProperties(["crypto", "TextEncoder", "FormData", "fetch"]);
 // cannot account for any other concurrent gradual roll-outs.
 const ENABLE_PROB = 0.01;
 const DEBUG = false;
-const OPT_OUT_PREF = "datareporting.healthreport.uploadEnabled";
-const TELEMETRY_ENABLED_PREF = "toolkit.telemetry.enabled";
+const OPT_OUT_PREF = "toolkit.telemetry.coverage.opt-out";
+const TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
 const REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
 
 /* eslint-disable no-console */
