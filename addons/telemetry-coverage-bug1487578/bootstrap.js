@@ -5,7 +5,7 @@
 "use strict";
 
 /* eslint-disable mozilla/no-define-cc-etc */
-let {Cu} = Components;
+let {utils: Cu} = Components;
 
 /* eslint-disable mozilla/use-chromeutils-import */
 Cu.import("resource://gre/modules/Services.jsm");
