@@ -49,7 +49,7 @@ async function reportTelemetrySetting() {
   };
 
   let formData = new FormData();
-  formData.append("telemetry_enabled", payload);
+  formData.append("telemetry_enabled", JSON.stringify(payload));
 
   debug(`posting to endpoint ${REPORTING_ENDPOINT} with payload:`, payload);
 
