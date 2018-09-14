@@ -24,7 +24,7 @@ const ENABLE_PROB = 0.01;
 const DEBUG = false;
 const OPT_OUT_PREF = "toolkit.telemetry.coverage.opt-out";
 const TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
-const REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
+const REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/1";
 
 /* eslint-disable no-console */
 function debug(msg, obj) {
@@ -51,9 +51,15 @@ async function reportTelemetrySetting() {
   let formData = new FormData();
   formData.append("telemetry_enabled", JSON.stringify(payload));
 
-  debug(`posting to endpoint ${REPORTING_ENDPOINT} with payload:`, payload);
+  let uuidGenerator = Cc["@mozilla.org/uuid-generator;1"].getService(Ci.nsIUUIDGenerator);
+  // generateUUID() gives a UUID surrounded by {...}, slice them off.
+  let uuid = uuidGenerator.generateUUID().toString().slice(1, -1);
 
-  await fetch(REPORTING_ENDPOINT, {
+  let endpoint = `${REPORTING_ENDPOINT}/${uuid}`;
+
+  debug(`posting to endpoint ${endpoint} with payload:`, payload);
+
+  await fetch(endpoint, {
     method: "PUT",
     body: formData
   });
