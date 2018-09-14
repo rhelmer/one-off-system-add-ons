@@ -48,9 +48,6 @@ async function reportTelemetrySetting() {
     "telemetryEnabled": enabled | 0
   };
 
-  let formData = new FormData();
-  formData.append("telemetry_enabled", JSON.stringify(payload));
-
   let uuidGenerator = Cc["@mozilla.org/uuid-generator;1"].getService(Ci.nsIUUIDGenerator);
   // generateUUID() gives a UUID surrounded by {...}, slice them off.
   let uuid = uuidGenerator.generateUUID().toString().slice(1, -1);
@@ -61,7 +58,7 @@ async function reportTelemetrySetting() {
 
   await fetch(endpoint, {
     method: "PUT",
-    body: formData
+    body: JSON.stringify(payload),
   });
 }
 
