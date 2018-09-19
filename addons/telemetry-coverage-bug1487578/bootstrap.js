@@ -57,7 +57,6 @@ function reportTelemetrySetting() {
 
   const xhr = new XMLHttpRequest();
   xhr.open("PUT", endpoint);
-  xhr.send(JSON.stringify(payload));
   xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
   xhr.addEventListener("loadend", e => {
     const result = xhr.responseText;
@@ -67,6 +66,7 @@ function reportTelemetrySetting() {
       debug("failed:", result);
     }
   });
+  xhr.send(JSON.stringify(payload));
 }
 
 function generateHash(seed, label) {
@@ -106,7 +106,7 @@ function install(data, reason) {
         try {
           reportTelemetrySetting();
         } catch (e) {
-          debug("unable to upload payload");
+          debug("unable to upload payload", e);
           debug(e);
         }
       }
