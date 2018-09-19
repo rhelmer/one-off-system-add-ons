@@ -5,7 +5,7 @@
 "use strict";
 
 /* eslint-disable mozilla/no-define-cc-etc */
-let {utils: Cu} = Components;
+let {utils: Cu, classes: Cc, interfaces: Ci} = Components;
 
 /* eslint-disable mozilla/use-chromeutils-import */
 Cu.import("resource://gre/modules/Services.jsm");
@@ -15,16 +15,16 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "UpdateUtils",
   "resource://gre/modules/UpdateUtils.jsm");
 
-Cu.importGlobalProperties(["crypto", "TextEncoder", "FormData", "fetch"]);
+Cu.importGlobalProperties(["crypto", "TextEncoder", "XMLHttpRequest"]);
 
 // we want to control this on the client rather than
 // depending on server-side throttling, as throttling
 // cannot account for any other concurrent gradual roll-outs.
-const ENABLE_PROB = 0.01;
-const DEBUG = false;
-const OPT_OUT_PREF = "toolkit.telemetry.coverage.opt-out";
-const TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
-const REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
+let ENABLE_PROB = 0.01;
+let DEBUG = false;
+let OPT_OUT_PREF = "toolkit.telemetry.coverage.opt-out";
+let TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
+let REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
 
 /* eslint-disable no-console */
 function debug(msg, obj) {
@@ -36,7 +36,7 @@ function debug(msg, obj) {
   }
 }
 
-async function reportTelemetrySetting() {
+function reportTelemetrySetting() {
   // this is a locked pref so it *really should* be present, but on the off chance it is not let's assume false.
   let enabled = Services.prefs.getBoolPref(TELEMETRY_ENABLED_PREF, false);
 
@@ -56,41 +56,63 @@ async function reportTelemetrySetting() {
 
   debug(`posting to endpoint ${endpoint} with payload:`, payload);
 
-  await fetch(endpoint, {
-    method: "PUT",
-    body: JSON.stringify(payload),
+  var xhr = new XMLHttpRequest();
+  xhr.open("PUT", endpoint);
+  xhr.send(JSON.stringify(payload));
+  xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+  xhr.addEventListener("loadend", e => {
+    var result = xhr.responseText;
+    if (xhr.readyState == 4 && xhr.status == "200") {
+      debug("success:", result);
+    } else {
+      debug("failed:", result);
+    }
   });
 }
 
-async function generateVariate(seed, label) {
+function generateHash(seed, label) {
+  Cu.importGlobalProperties(["crypto"]);
+
   const hasher = crypto.subtle;
-  const hash = await hasher.digest("SHA-256", new TextEncoder("utf-8").encode(seed + label));
-  let view = new DataView(hash);
-  return view.getUint32(0) / 0xffffffff;
+  const hash = hasher.digest("SHA-256", new TextEncoder("utf-8").encode(seed + label));
+
+  return hash;
 }
 
 /* eslint-disable no-unused-vars */
-async function install(data, reason) {
-  debug("Installing");
+function install(data, reason) {
+  debug("Installing", ClientID.getClientID(), data.id);
 
-  let optout = Services.prefs.getBoolPref(OPT_OUT_PREF, false);
+  let optout;
+  try {
+    optout = Services.prefs.getBoolPref(OPT_OUT_PREF, false);
+  } catch (e) {
+    debug("No opt-out pref:", e);
+    optout = false;
+  }
 
   if (optout) {
     debug(`User has set opt-out pref, disabling`);
     return;
   }
 
-  let variate = await generateVariate(await ClientID.getClientID(), data.id);
-  debug(variate);
+  ClientID.getClientID().then(clientID => {
+    let hasher = generateHash(clientID, data.id);
+    hasher.then(hash => {
+      let view = new DataView(hash);
+      let variate = view.getUint32(0) / 0xffffffff;
+      debug(`Variate: ${variate}`);
 
-  if (variate < ENABLE_PROB) {
-    try {
-      await reportTelemetrySetting();
-    } catch (e) {
-      debug("unable to upload payload");
-      debug(e);
-    }
-  }
+      if (variate < ENABLE_PROB) {
+        try {
+          reportTelemetrySetting();
+        } catch (e) {
+          debug("unable to upload payload");
+          debug(e);
+        }
+      }
+    }).catch(err => debug(err));
+  }).catch(err => debug(err));
 }
 
 function shutdown() {}
