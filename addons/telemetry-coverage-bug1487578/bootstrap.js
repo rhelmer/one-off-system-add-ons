@@ -57,7 +57,7 @@ function reportTelemetrySetting() {
 
   const xhr = new XMLHttpRequest();
   xhr.open("PUT", endpoint);
-  xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+  xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
   xhr.addEventListener("loadend", e => {
     const result = xhr.responseText;
     if (xhr.readyState == 4 && xhr.status == "200") {
@@ -67,6 +67,8 @@ function reportTelemetrySetting() {
     }
   });
   xhr.send(JSON.stringify(payload));
+
+  return uuid;
 }
 
 function generateHash(seed, label) {
@@ -79,6 +81,7 @@ function generateHash(seed, label) {
 }
 
 /* eslint-disable no-unused-vars */
+/* eslint-disable mozilla/use-default-preference-values */
 function install(data, reason) {
   debug("Installing", ClientID.getClientID(), data.id);
 
@@ -96,21 +99,30 @@ function install(data, reason) {
   }
 
   ClientID.getClientID().then(clientID => {
+    if (!clientID) {
+      throw new Error("No Telemetery client ID");
+    }
     const hasher = generateHash(clientID, data.id);
     hasher.then(hash => {
+      if (!hash) {
+        throw new Error("No cryptographic hash");
+      }
       const view = new DataView(hash);
       const variate = view.getUint32(0) / 0xffffffff;
       debug(`Variate: ${variate}`);
 
+      let uuid;
       if (variate < ENABLE_PROB) {
         try {
-          reportTelemetrySetting();
+          uuid = reportTelemetrySetting();
         } catch (e) {
           debug("unable to upload payload", e);
           debug(e);
         }
       }
+      return uuid;
     }).catch(err => debug(err));
+    return clientID;
   }).catch(err => debug(err));
 }
 
