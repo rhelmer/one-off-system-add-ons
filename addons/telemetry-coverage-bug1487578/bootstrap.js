@@ -5,7 +5,7 @@
 "use strict";
 
 /* eslint-disable mozilla/no-define-cc-etc */
-let {utils: Cu, classes: Cc, interfaces: Ci} = Components;
+const {utils: Cu, classes: Cc, interfaces: Ci} = Components;
 
 /* eslint-disable mozilla/use-chromeutils-import */
 Cu.import("resource://gre/modules/Services.jsm");
@@ -20,11 +20,11 @@ Cu.importGlobalProperties(["crypto", "TextEncoder", "XMLHttpRequest"]);
 // we want to control this on the client rather than
 // depending on server-side throttling, as throttling
 // cannot account for any other concurrent gradual roll-outs.
-let ENABLE_PROB = 0.01;
-let DEBUG = false;
-let OPT_OUT_PREF = "toolkit.telemetry.coverage.opt-out";
-let TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
-let REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
+const ENABLE_PROB = 0.01;
+const DEBUG = false;
+const OPT_OUT_PREF = "toolkit.telemetry.coverage.opt-out";
+const TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
+const REPORTING_ENDPOINT = "https://telemetry-coverage.mozilla.org/submit/coverage/coverage/1";
 
 /* eslint-disable no-console */
 function debug(msg, obj) {
@@ -37,8 +37,7 @@ function debug(msg, obj) {
 }
 
 function reportTelemetrySetting() {
-  // this is a locked pref so it *really should* be present, but on the off chance it is not let's assume false.
-  let enabled = Services.prefs.getBoolPref(TELEMETRY_ENABLED_PREF, false);
+  const enabled = Services.prefs.getBoolPref(TELEMETRY_ENABLED_PREF, false);
 
   const payload = {
     "appVersion": Services.appinfo.version,
@@ -48,20 +47,20 @@ function reportTelemetrySetting() {
     "telemetryEnabled": enabled | 0
   };
 
-  let uuidGenerator = Cc["@mozilla.org/uuid-generator;1"].getService(Ci.nsIUUIDGenerator);
+  const uuidGenerator = Cc["@mozilla.org/uuid-generator;1"].getService(Ci.nsIUUIDGenerator);
   // generateUUID() gives a UUID surrounded by {...}, slice them off.
-  let uuid = uuidGenerator.generateUUID().toString().slice(1, -1);
+  const uuid = uuidGenerator.generateUUID().toString().slice(1, -1);
 
-  let endpoint = `${REPORTING_ENDPOINT}/${uuid}`;
+  const endpoint = `${REPORTING_ENDPOINT}/${uuid}`;
 
   debug(`posting to endpoint ${endpoint} with payload:`, payload);
 
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
   xhr.open("PUT", endpoint);
   xhr.send(JSON.stringify(payload));
   xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
   xhr.addEventListener("loadend", e => {
-    var result = xhr.responseText;
+    const result = xhr.responseText;
     if (xhr.readyState == 4 && xhr.status == "200") {
       debug("success:", result);
     } else {
@@ -97,10 +96,10 @@ function install(data, reason) {
   }
 
   ClientID.getClientID().then(clientID => {
-    let hasher = generateHash(clientID, data.id);
+    const hasher = generateHash(clientID, data.id);
     hasher.then(hash => {
-      let view = new DataView(hash);
-      let variate = view.getUint32(0) / 0xffffffff;
+      const view = new DataView(hash);
+      const variate = view.getUint32(0) / 0xffffffff;
       debug(`Variate: ${variate}`);
 
       if (variate < ENABLE_PROB) {
