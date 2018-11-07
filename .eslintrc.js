@@ -22,6 +22,30 @@ module.exports = {
   "extends": [
     "plugin:mozilla/recommended"
   ],
+  "overrides": [{
+    // Don't enable for old add-ons that were written before we had the rule.
+    "files": [
+      "addons/asyncrendering/**",
+      "addons/aushelper/**",
+      "addons/disable-captive-portal/**",
+      "addons/disable-cert-transparency/**",
+      "addons/disable-prefetch/**",
+      "addons/enable-screenshots/**",
+      "addons/hsts-priming/**",
+      "addons/outofdate-notifications/**",
+      "addons/tls13-comparison-v1/**",
+      "addons/tls13-compat-ff51/**",
+      "addons/tls13-middlebox-draft22/**",
+      "addons/tls13-middlebox-ghack/**",
+      "addons/tls13-middlebox-serverhello/**",
+      "addons/tls13-rollout-bug1442042/bootstrap.js",
+      "addons/websensehelper/**"
+    ],
+    "rules": {
+      "mozilla/use-chromeutils-import": "off",
+      "mozilla/no-define-cc-etc": "off"
+    }
+  }],
   "rules": {
     "mozilla/import-globals": "warn",
 

@@ -14,11 +14,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "4.10.0",
-    "eslint-plugin-json": "1.2.0",
-    "eslint-plugin-mozilla": "0.4.8",
-    "eslint-plugin-no-unsanitized": "2.0.1",
-    "eslint-plugin-promise": "3.6.0"
+    "eslint": "5.6.0",
+    "eslint-plugin-json": "1.2.1",
+    "eslint-plugin-mozilla": "0.16.1",
+    "eslint-plugin-no-unsanitized": "3.0.2",
+    "eslint-plugin-promise": "4.0.1"
   },
   "scripts": {
     "lint": "eslint --ext=.js,.json .",
