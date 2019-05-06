@@ -12,7 +12,6 @@
 const {utils: Cu, classes: Cc, interfaces: Ci} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "skeleton" }]*/
 XPCOMUtils.defineLazyModuleGetter(this, "XPIProvider", "resource://gre/modules/addons/XPIProvider.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Services", "resource://gre/modules/Services.jsm");
 
