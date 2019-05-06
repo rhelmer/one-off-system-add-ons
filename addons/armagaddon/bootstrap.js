@@ -51,11 +51,11 @@ async function inject_intermediate() {
   }
 }
 
-function install() {
+async function install() {
   await inject_intermediate();
 }
 
-async function uninstall() {}
+function uninstall() {}
 
 function startup() {}
 
