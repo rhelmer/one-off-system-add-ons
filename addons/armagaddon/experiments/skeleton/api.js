@@ -37,10 +37,12 @@ const skeleton = class extends ExtensionAPI {
 
             // Finally, force a re-verify of signatures.
             try {
+              // In Firefox 63+, `verifySignatures` is in `XPIDatabase`.
               await XPIDatabase.verifySignatures();
               console.log("signatures re-verified"); // eslint-disable-line no-console
             } catch (e) {
               try {
+                // If this is Firefox <63, try the previous location of the `verifySignatures` function.
                 await XPIProvider.verifySignatures();
               } catch (f) {
                 console.error("failed to re-verify signatures:", e); // eslint-disable-line no-console
