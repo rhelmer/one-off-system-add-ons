@@ -3,7 +3,7 @@
 ChromeUtils.defineModuleGetter(this, "XPIDatabase", "resource://gre/modules/addons/XPIDatabase.jsm");
 ChromeUtils.defineModuleGetter(this, "XPIProvider", "resource://gre/modules/addons/XPIProvider.jsm");
 
-const skeleton = class extends ExtensionAPI {
+this.skeleton = class extends ExtensionAPI {
   getAPI(/* context */) {
     return {
       experiments: {
